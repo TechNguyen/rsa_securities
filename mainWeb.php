@@ -9,32 +9,57 @@
 </head>
 <body>
         <?php 
-
             function gcd($x,$p) {
-                while($x != $p) {
-                    if($x > $p) {
-                        $x -= $p;
-                    }else {
-                        $p -= $x;
-                    }
-                }
-                return $x;
+                if($p == 0) {
+                    return $x;
+                } return gcd($p, $x % $p);
             }
             function oclitmorong($x, $p) {
                 $i = 0;
-                $t = 0;
-               if($x > $p) {
-                $q = $x / $p;
-                $r = $x % $p;
-                while($r != 0) {
-                    $x = $q;
-                    $p = $r;
-                    $i++;
-                };
-               } else{
-                $q = $p / $x;
-                $r = $p % $x;
-               }
+                $q = array();
+                $t = array();
+                $r = array();
+                $t[1] = 1;
+                $t[0] = 0;
+                if($x > $p) {
+                    $temp = $x;
+                    while($p != 0) {
+                        $q[$i+1] = (int)($x / $p);
+                        $r[$i+1] = $p;
+                        $r[$i+2] = $x % $p;
+                        $p = $r[$i+2];
+                        $x = $r[$i+1];
+                        if($i > 1) {
+                            $t[$i] =  $t[$i-2] - $q[$i-1] * $t[$i-1];
+                        }
+                        $i++;
+                    };
+                    $t[$i] =  $t[$i-2] - $q[$i-1] * $t[$i-1]; 
+                    while( $t[$i] < 0) {
+                        $t[$i] +=  $temp;
+                    }
+                } else {
+                    $sw = $x;
+                    $x = $p;
+                    $p = $sw;
+                    $temp = $x;
+                    while($p != 0) {
+                        $q[$i+1] = (int)($x / $p);
+                        $r[$i+1] = $p;
+                        $r[$i+2] = $x % $p;
+                        $p = $r[$i+2];
+                        $x = $r[$i+1];
+                        if($i > 1) {
+                            $t[$i] =  $t[$i-2] - $q[$i-1] * $t[$i-1];
+                        }
+                        $i++;
+                    };
+                    $t[$i] =  $t[$i-2] - $q[$i-1] * $t[$i-1];
+                    while( $t[$i] < 0) {
+                        $t[$i] +=  $temp;
+                    }
+                }
+                return  $t[$i];
             }
             function binhphuong( $x,$k,$n) {
                 $p = 0;
@@ -49,13 +74,30 @@
                     }
                 }
             }
+            function signature($x, $k, $alpha ,$p, $a) {
+                $f = binhphuong($alpha,$k,$p);
+                $knghichdao = oclitmorong($k, $p-1);
+                $omega = (($x - $a * $f) *   $knghichdao) % ($p - 1);
+                while( $omega < 0) {
+                    $omega += ($p-1);
+                }
+                return [$f,$omega];
+            }
+
+            function checksign($x,$alpha,$a,$p) {
+                $belta = binhphuong($alpha,$a,$p);
+                $mahoa = binhphuong($alpha,$x,$p);
+                echo $mahoa;
+            }
             if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if(!empty($_REQUEST['textElagamal'])) {
                     $text = intval($_REQUEST['textElagamal']);
                     $b = binhphuong(2,211,463);
                     $c = binhphuong(2,235,463);
-                    // $d = oclitmorong(235,462);
-                    echo  $d;
+                    $d = gcd(8,29);
+                    $e = oclitmorong(235,462);
+                    // signature(112,235,2,463,211);
+                    checksign(112,2,463);
                }
             }
            
